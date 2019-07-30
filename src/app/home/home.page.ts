@@ -84,19 +84,19 @@ export class HomePage {
     });
   }
 
-  connect() {
-    // After connecting to a Bluetooth device, pressing the Scan button will make the device disappear in the list of results
-    // because the device is now connected to the phone, which means that the device is no longer available
-    // to connect to 
-    BLE.connect('C1E746FB-C055-A37D-D7DA-009CF1E61837').subscribe(peripheralData => {
-      console.log(peripheralData);
-      console.log("connected");
-    },
-    peripheralData => {
-      console.log('disconnected');
-    });
-    BLE.stopScan();
-  }
+  // connect() {
+  //   // After connecting to a Bluetooth device, pressing the Scan button will make the device disappear in the list of results
+  //   // because the device is now connected to the phone, which means that the device is no longer available
+  //   // to connect to 
+  //   BLE.connect('C1E746FB-C055-A37D-D7DA-009CF1E61837').subscribe(peripheralData => {
+  //     console.log(peripheralData);
+  //     console.log("connected");
+  //   },
+  //   peripheralData => {
+  //     console.log('disconnected');
+  //   });
+  //   BLE.stopScan();
+  // }
 
   scanError(error) {
     console.log(error);
