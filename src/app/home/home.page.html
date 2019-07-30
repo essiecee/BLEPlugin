@@ -7,11 +7,14 @@
 </ion-header>
 
 <ion-content>
-  <ion-button (click)="scan()">Scan</ion-button>
+  <ion-button expand="block" (click)="scan()">Scan</ion-button>
    <ion-list> 
-    <ion-button *ngFor="let device of devices">
+      <p id="connection">Disconnected: </p>
+    <ion-button color="medium" *ngFor="let device of devices">
       <h2>{{ device.name || 'Unnamed' }}</h2>
+      <br>
       <p>{{ device.id }}</p>
+      <br>
       <p>RSSI: {{ device.rssi }}</p>
     </ion-button>  
    </ion-list> 
