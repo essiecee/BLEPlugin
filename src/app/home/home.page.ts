@@ -1,6 +1,6 @@
 // declare var bluetoothle: any;
 import { Component, NgZone } from '@angular/core';
-import { AlertController, ToastController, NavController, Platform } from '@ionic/angular';
+import { ToastController, NavController } from '@ionic/angular';
 import { BluetoothLE } from '@ionic-native/bluetooth-le/ngx';
 import { BLE } from '@ionic-native/ble';
 @Component({
@@ -17,7 +17,7 @@ export class HomePage {
     public navCtrl: NavController, 
     private toastCtrl: ToastController,
     // an Angular service
-    private ngZone: NgZone
+    private ngZone: NgZone,
   ) { }
 
   ngOnInit() {
@@ -33,7 +33,16 @@ export class HomePage {
     // Calling subscribe allows us to listen in on any data that is coming through
     // If we receive a device, then we will call onDeviceDiscovered
     // IF we encounter an error, then we will call scanError
-    BLE.scan([], 5).subscribe(
+    // This scan displays all devices that have the service 2220
+    // BLE.scan(["2220"], 5).subscribe(
+    //   device => this.onDeviceDiscovered(device), 
+    //   error => this.scanError(error)
+    // );
+    
+    // This only displays Beacon when it is powered on
+    BLE.startScanWithOptions(["2220"], {
+      reportDuplicates: false
+    }).subscribe(
       device => this.onDeviceDiscovered(device), 
       error => this.scanError(error)
     );
@@ -47,10 +56,50 @@ export class HomePage {
     this.ngZone.run(() => {
       this.devices.push(device);
     });
+    this.autoConnect();
   }
 
-  scanError(err) {
-    console.log(err);
+  autoConnect() {
+    // someFunction() {
+    //   this.ble.autoConnect(deviceId, onConnected.bind(this), onDisconnected.bind(this));
+    // }
+   
+    // onConnected(peripheral) {
+    //   console.log(`Connected to ${peripheral.id}`)l
+    // }
+   
+    // onDisconnected(peripheral) {
+    //   console.log(`Disconnected from ${peripheral.id}`)l
+    // }
+    
+    BLE.autoConnect('C1E746FB-C055-A37D-D7DA-009CF1E61837', 
+    function(peripheralData) {
+      console.log(peripheralData);
+      console.log('Success! CONNECTED.');
+      document.getElementById("connection").innerHTML = "Connected!";
+     
+    },
+    function() {
+      console.log('Error! Unable to connect.');
+    });
+  }
+
+  connect() {
+    // After connecting to a Bluetooth device, pressing the Scan button will make the device disappear in the list of results
+    // because the device is now connected to the phone, which means that the device is no longer available
+    // to connect to 
+    BLE.connect('C1E746FB-C055-A37D-D7DA-009CF1E61837').subscribe(peripheralData => {
+      console.log(peripheralData);
+      console.log("connected");
+    },
+    peripheralData => {
+      console.log('disconnected');
+    });
+    BLE.stopScan();
+  }
+
+  scanError(error) {
+    console.log(error);
   }
 
   setStatus(message) {
@@ -59,7 +108,7 @@ export class HomePage {
       this.statusMessage = message;
     });
   }
-
+}
   // ionViewDidEnter() {
   //   console.log('ionViewDidEnter');
   //   this.scan();
@@ -68,7 +117,7 @@ export class HomePage {
   // scan() {
   //   this.devices = [];
   // }
-}
+
 
 // import { UuidsService } from '../uuids.service';
 
@@ -393,7 +442,3 @@ export class HomePage {
   
 //     });
 //   }
-
-//  ngOnInit() {
-//   }
-// }
