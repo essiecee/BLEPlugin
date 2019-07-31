@@ -1,8 +1,13 @@
-// declare var bluetoothle: any;
 import { Component, NgZone } from '@angular/core';
 import { ToastController, NavController } from '@ionic/angular';
-import { BluetoothLE } from '@ionic-native/bluetooth-le/ngx';
 import { BLE } from '@ionic-native/ble';
+
+const device_ID = 'C1E746FB-C055-A37D-D7DA-009CF1E61837';
+// for beacon: 'C1E746FB-C055-A37D-D7DA-009CF1E61837';
+// for flicker: '887F55AA-4AA6-F381-CD4B-8CBE4EE11961';
+const service_ID = '2220';
+const characteristic_ID = '2222';
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -40,7 +45,7 @@ export class HomePage {
     // );
     
     // This only displays Beacon when it is powered on
-    BLE.startScanWithOptions(["2220"], {
+    BLE.startScanWithOptions([service_ID], {
       reportDuplicates: false
     }).subscribe(
       device => this.onDeviceDiscovered(device), 
@@ -60,29 +65,29 @@ export class HomePage {
   }
 
   autoConnect() {
-    // someFunction() {
-    //   this.ble.autoConnect(deviceId, onConnected.bind(this), onDisconnected.bind(this));
-    // }
-   
-    // onConnected(peripheral) {
-    //   console.log(`Connected to ${peripheral.id}`)l
-    // }
-   
-    // onDisconnected(peripheral) {
-    //   console.log(`Disconnected from ${peripheral.id}`)l
-    // }
-    
-    BLE.autoConnect('C1E746FB-C055-A37D-D7DA-009CF1E61837', 
+    BLE.autoConnect(device_ID, 
     function(peripheralData) {
       console.log(peripheralData);
       console.log('Success! CONNECTED.');
-      document.getElementById("connection").innerHTML = "Connected!";
-     
+      document.getElementById("button").innerHTML = "Connected!";
     },
     function() {
+      document.getElementById("button").innerHTML = "Unable to connect.";
       console.log('Error! Unable to connect.');
     });
   }
+
+  sendTestData() {
+    var data = new Uint16Array(1);
+    data[0] = 500;
+    // had to cast the SharedArrayBuffer to an ArrayBuffer for compatability purposes
+    // service_id is 2220
+    // characteristic_id is 2222 or 2223
+    BLE.write(device_ID, service_ID, characteristic_ID, data.buffer as ArrayBuffer).then(
+      () => console.log("Successfully wrote data. " + data),
+      e => console.log("Failed to write. " + e)
+    );
+   }
 
   connect() {
     // After connecting to a Bluetooth device, pressing the Scan button will make the device disappear in the list of results
@@ -109,15 +114,6 @@ export class HomePage {
     });
   }
 }
-  // ionViewDidEnter() {
-  //   console.log('ionViewDidEnter');
-  //   this.scan();
-  // }
-
-  // scan() {
-  //   this.devices = [];
-  // }
-
 
 // import { UuidsService } from '../uuids.service';
 

@@ -7,9 +7,10 @@
 </ion-header>
 
 <ion-content>
-  <ion-button expand="block" (click)="scan()">Scan</ion-button>
+  <ion-button id="button" expand="block" (click)="scan()">
+    Connect to Beacon <ion-icon name="bluetooth"></ion-icon>
+  </ion-button>
    <ion-list> 
-      <p id="connection">Disconnected: </p>
     <ion-button color="medium" *ngFor="let device of devices">
       <h2>{{ device.name || 'Unnamed' }}</h2>
       <br>
@@ -17,6 +18,7 @@
       <br>
       <p>RSSI: {{ device.rssi }}</p>
     </ion-button>  
+    <ion-button (click)="sendTestData()">Send Testing Data</ion-button>
    </ion-list> 
 </ion-content>
 
