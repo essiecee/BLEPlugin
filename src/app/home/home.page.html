@@ -20,6 +20,31 @@
     </ion-button>  
     <ion-button (click)="sendTestData()">Send Testing Data</ion-button>
    </ion-list> 
+
+   <div *ngIf="incr">
+      <div *ngIf="incrTest">
+          <ion-button expand="block" (click)="startIncr()" color="success">
+              Increasing Test
+            </ion-button>
+       </div>
+    
+       <div *ngIf="incrTest == false">
+          <ion-button expand="block" (click)="stopIncr()" color="success">
+              Increasing Test
+            </ion-button>
+       </div>
+   </div>
+   
+
+   <div *ngIf="decrTest">
+      <ion-button expand="block" (click)="stopDecr()" color="warning">
+          Decreasing Test
+        </ion-button>
+   </div>
+
+   <p *ngIf="incr"> Increasing: {{ values / 10 }} Hz </p>
+   <p *ngIf="decrTest">Decreasing: {{ values / 10 }} Hz</p>
+  
 </ion-content>
 
 <ion-footer>

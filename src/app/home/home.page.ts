@@ -8,6 +8,8 @@ const device_ID = 'C1E746FB-C055-A37D-D7DA-009CF1E61837';
 const service_ID = '2220';
 const characteristic_ID = '2222';
 
+const min_hz = 250; // 25.0 Hz
+const max_hz = 550; // 55.0 Hz
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -15,6 +17,11 @@ const characteristic_ID = '2222';
 })
 
 export class HomePage {
+  incr: boolean = true;
+  incrTest: boolean = true;
+  decrTest: boolean = false;
+  values: number = min_hz;
+  interval;
   devices: any[] = [];
   statusMessage: string;
 
@@ -25,9 +32,63 @@ export class HomePage {
     private ngZone: NgZone,
   ) { }
 
-  ngOnInit() {
+  ngOnInit() {}
 
-  }
+  startIncr() {
+    this.incrTest = false;
+    // start at minHz, increase at step rate until user input (or max hz)
+    // 0.1 Hz / 0.2 Sec
+    // 250 -> 251 in 0.2 seconds
+    // 250 -> 255 in 1 second
+    this.interval = setInterval(() => {
+      if (this.values == max_hz) {
+        this.stopIncr();
+      } else {
+        this.sendFrequencyData(this.values);
+        this.values++;
+        console.log(this.values);
+      }
+    }, 200)
+ }
+
+ stopIncr() {
+   // need to record this.values and put into a service
+   clearInterval(this.interval);
+   // does not work for some reason
+  setTimeout(() => {
+    this.incr = false;
+    this.decrTest = true;
+    this.values = max_hz;
+    this.interval = setInterval(() => {
+      if (this.values == min_hz) {
+        this.stopDecr();
+      } else {
+        this.sendFrequencyData(this.values);
+        this.values--;
+        console.log(this.values);
+      }
+    }, 200)
+  }, 2000);
+ }
+
+ stopDecr() {
+  // need to record this.values and put into a service
+  clearInterval(this.interval);
+ }
+
+//  startDecr() {
+//   this.decrTest = true;
+//   this.values = max_hz;
+//   this.interval = setInterval(() => {
+//     if (this.values == min_hz) {
+//       this.stopDecr();
+//     } else {
+//       this.sendFrequencyData(this.values);
+//       this.values--;
+//       console.log(this.values);
+//     }
+//   }, 200)
+//  }
 
   scan() {
     this.setStatus('Scanning for Bluetooth LE Devices');
@@ -44,7 +105,7 @@ export class HomePage {
     //   error => this.scanError(error)
     // );
     
-    // This only displays Beacon when it is powered on
+    // This only displays Beacon / Flicker when it is powered on
     BLE.startScanWithOptions([service_ID], {
       reportDuplicates: false
     }).subscribe(
@@ -80,28 +141,21 @@ export class HomePage {
   sendTestData() {
     var data = new Uint16Array(1);
     data[0] = 500;
-    // had to cast the SharedArrayBuffer to an ArrayBuffer for compatability purposes
-    // service_id is 2220
-    // characteristic_id is 2222 or 2223
+    //  cast the SharedArrayBuffer to an ArrayBuffer for compatability purposes
     BLE.write(device_ID, service_ID, characteristic_ID, data.buffer as ArrayBuffer).then(
       () => console.log("Successfully wrote data. " + data),
       e => console.log("Failed to write. " + e)
     );
    }
 
-  connect() {
-    // After connecting to a Bluetooth device, pressing the Scan button will make the device disappear in the list of results
-    // because the device is now connected to the phone, which means that the device is no longer available
-    // to connect to 
-    // BLE.connect('C1E746FB-C055-A37D-D7DA-009CF1E61837').subscribe(peripheralData => {
-    //   console.log(peripheralData);
-    //   console.log("connected");
-    // },
-    // peripheralData => {
-    //   console.log('disconnected');
-    // });
-    // BLE.stopScan();
-  }
+   sendFrequencyData(num) {
+      var data = new Uint16Array(1);
+      data[0] = num;
+      BLE.write(device_ID, service_ID, characteristic_ID, data.buffer as ArrayBuffer).then(
+        () => console.log("Successfully wrote data. " + data),
+        e => console.log("Failed to write. " + e)
+      );
+   }
 
   scanError(error) {
     console.log(error);

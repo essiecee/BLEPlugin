@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { UuidsService } from './uuids.service';
+import { SessionDataService } from './session-data.service';
 
-describe('UuidsService', () => {
+describe('SessionDataService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: UuidsService = TestBed.get(UuidsService);
+    const service: SessionDataService = TestBed.get(SessionDataService);
     expect(service).toBeTruthy();
   });
 });
