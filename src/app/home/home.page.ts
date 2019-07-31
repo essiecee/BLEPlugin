@@ -1,6 +1,7 @@
 import { Component, NgZone } from '@angular/core';
 import { ToastController, NavController } from '@ionic/angular';
 import { BLE } from '@ionic-native/ble';
+import { SessionDataService } from '../session-data.service';
 
 const device_ID = 'C1E746FB-C055-A37D-D7DA-009CF1E61837';
 // for beacon: 'C1E746FB-C055-A37D-D7DA-009CF1E61837';
@@ -10,6 +11,7 @@ const characteristic_ID = '2222';
 
 const min_hz = 250; // 25.0 Hz
 const max_hz = 550; // 55.0 Hz
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -24,13 +26,20 @@ export class HomePage {
   interval;
   devices: any[] = [];
   statusMessage: string;
+  sessionEnded: boolean = false;
+
+  incrTestResult: number;
+  decrTestResult: number;
 
   constructor(
     public navCtrl: NavController, 
-    private toastCtrl: ToastController,
     // an Angular service
     private ngZone: NgZone,
-  ) { }
+    private sessionServ: SessionDataService
+  ) { 
+    this.incrTestResult = sessionServ.getIncr();
+    this.decrTestResult = sessionServ.getDecr();
+  }
 
   ngOnInit() {}
 
@@ -53,6 +62,8 @@ export class HomePage {
 
  stopIncr() {
    // need to record this.values and put into a service
+   this.sessionServ.setIncr(this.values);
+   // stops the timer
    clearInterval(this.interval);
    // does not work for some reason
   setTimeout(() => {
@@ -73,7 +84,16 @@ export class HomePage {
 
  stopDecr() {
   // need to record this.values and put into a service
+  this.sessionServ.setDecr(this.values);
+  // stops the timer
   clearInterval(this.interval);
+  this.sessionEnded = true;
+  this.displayData();
+ }
+
+ displayData() {
+   this.incrTestResult = this.sessionServ.getIncr();
+   this.decrTestResult = this.sessionServ.getDecr();
  }
 
 //  startDecr() {
