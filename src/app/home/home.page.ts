@@ -151,6 +151,7 @@ export class HomePage {
       console.log(peripheralData);
       console.log('Success! CONNECTED.');
       document.getElementById("button").innerHTML = "Connected!";
+      document.getElementById("connectionStatus").innerHTML = "Status: Connected!";
     },
     function() {
       document.getElementById("button").innerHTML = "Unable to connect.";
