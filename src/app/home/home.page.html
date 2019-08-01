@@ -7,42 +7,44 @@
 </ion-header>
 
 <ion-content>
-  <p id="connectionStatus">Status: Disconnected</p>
-  <ion-button id="button" expand="block" (click)="scan()">
+  <ion-button #first id="button" expand="block" (click)="scan(first)">
     Connect to Beacon <ion-icon name="bluetooth"></ion-icon>
   </ion-button>
    <ion-list> 
     <div *ngFor="let device of devices">
-      <h1>Found: {{ device.name || 'Unnamed' }} </h1>
-      <br>
-      <p>ID: {{ device.id }}</p>
+      <p>Found: {{ device.name || 'Unnamed' }} </p>
     </div>  
-    <ion-button (click)="sendTestData()">Send Testing Data</ion-button>
    </ion-list> 
 
    <div *ngIf="incr">
-      <div *ngIf="incrTest">
-          <ion-button expand="block" (click)="startIncr()" color="success">
-              Increasing Test
+     <ion-row>
+       <ion-col style="text-align: center" *ngIf="incrTest">
+              <ion-button (click)="startIncr()" color="success" class="circleButton">
+                  Increasing Test
+                </ion-button>
+        </ion-col>
+      </ion-row>
+        
+      <ion-row>
+        <ion-col style="text-align: center" *ngIf="incrTest == false">
+            <ion-button (click)="stopIncr()" color="success" class="circleButton">
+                Increasing Test
             </ion-button>
-       </div>
-    
-       <div *ngIf="incrTest == false">
-          <ion-button expand="block" (click)="stopIncr()" color="success">
-              Increasing Test
-            </ion-button>
-       </div>
+        </ion-col>
+      </ion-row>
    </div>
-   
 
-   <div *ngIf="decrTest">
-      <ion-button expand="block" (click)="stopDecr()" color="warning">
-          Decreasing Test
-        </ion-button>
-   </div>
+    <ion-row *ngIf="decrTest">
+      <ion-col style="text-align: center">
+          <ion-button (click)="stopDecr()" color="warning" class="circleButton">
+              Decreasing Test
+          </ion-button>
+      </ion-col>
+    </ion-row>
+      
 
    <p *ngIf="incr"> Increasing: {{ values / 10 }} Hz </p>
-   <p *ngIf="decrTest">Decreasing: {{ values / 10 }} Hz</p>
+   <p *ngIf="decrTest && sessionEnded == false">Decreasing: {{ values / 10 }} Hz</p>
   
    <p *ngIf="sessionEnded">Session Results: <br>
   Increasing: {{ incrTestResult / 10 }} Hz <br>

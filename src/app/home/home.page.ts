@@ -19,6 +19,8 @@ const max_hz = 550; // 55.0 Hz
 })
 
 export class HomePage {
+  testDevice: any;
+
   incr: boolean = true;
   incrTest: boolean = true;
   decrTest: boolean = false;
@@ -42,6 +44,10 @@ export class HomePage {
   }
 
   ngOnInit() {}
+
+  changeColor(ionicButton) {
+    ionicButton.color = 'success';
+  }
 
   startIncr() {
     this.incrTest = false;
@@ -110,7 +116,7 @@ export class HomePage {
 //   }, 200)
 //  }
 
-  scan() {
+  scan(ionicButton) {
     this.setStatus('Scanning for Bluetooth LE Devices');
     this.devices = [];  // clear list
 
@@ -129,29 +135,30 @@ export class HomePage {
     BLE.startScanWithOptions([service_ID], {
       reportDuplicates: false
     }).subscribe(
-      device => this.onDeviceDiscovered(device), 
+      device => this.onDeviceDiscovered(device, ionicButton), 
       error => this.scanError(error)
     );
   }
 
-  onDeviceDiscovered(device) {
+  onDeviceDiscovered(device, ionicButton) {
     // device is the value to be converted to a JSON string
     // null means include all properties of the device in the resulting JSON string
     // 2 means include 2 units of white space into the output JSON string for readability
     console.log('Discovered ' + JSON.stringify(device, null, 2));
     this.ngZone.run(() => {
+      this.testDevice = device;
       this.devices.push(device);
     });
-    this.autoConnect();
+    this.autoConnect(ionicButton);
   }
 
-  autoConnect() {
+  autoConnect(ionicButton) {
     BLE.autoConnect(device_ID, 
     function(peripheralData) {
       console.log(peripheralData);
       console.log('Success! CONNECTED.');
+      ionicButton.color = 'success';
       document.getElementById("button").innerHTML = "Connected!";
-      document.getElementById("connectionStatus").innerHTML = "Status: Connected!";
     },
     function() {
       document.getElementById("button").innerHTML = "Unable to connect.";
